@@ -1,0 +1,56 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary: #2563eb;
+  --primary-dark: #1d4ed8;
+  --background: #f8fafc;
+  --foreground: #1e293b;
+  --card: #ffffff;
+  --border: #e2e8f0;
+  --input: #f1f5f9;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+.command-prompt {
+  box-shadow: none;
+  border-radius: 0;
+  overflow: hidden;
+  background: var(--card);
+  border: 1px solid var(--border);
+  width: 100vw;
+  margin: 0;
+  border-left: 0;
+  border-right: 0;
+}
+
+.message {
+  padding: 1rem 1.5rem;
+  transition: background-color 0.2s;
+}
+
+.message:hover {
+  background: var(--input);
+}
+
+.input-area {
+  border-top: 1px solid var(--border);
+  padding: 0;
+  background: var(--card);
+  width: 100%;
+}
+
+.input-field {
+  border-radius: 0;
+  box-shadow: none;
+  background: var(--input);
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
