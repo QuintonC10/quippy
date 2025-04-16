@@ -25,6 +25,16 @@ export default function CommandPrompt() {
     // Add user message
     setMessages(prev => [...prev, { type: 'user', content: input }]);
     
+    // Check for "thank you" message and respond without scanning
+    if (input.toLowerCase().includes('thank you')) {
+      setMessages(prev => [...prev, {
+        type: 'system',
+        content: "You're welcome"
+      }]);
+      setInput('');
+      return;
+    }
+    
     try {
       // Show scanning message
       setMessages(prev => [...prev, {
@@ -34,13 +44,24 @@ export default function CommandPrompt() {
 
       // Get real system info
       const systemInfo = await scanSystem();
+      console.log('System Info:', systemInfo); // Debug log
+
+      // Get the AI-generated solution
       const analysis = await analyzeProblem(input, systemInfo);
 
-      // Add the analysis to messages
-      setMessages(prev => [...prev, {
-        type: 'system',
-        content: analysis
-      }]);
+      // Combine system info and solution in one message
+      setMessages(prev => [
+        ...prev,
+        {
+          type: 'system',
+          content:
+            `OS: ${systemInfo.os}\n` +
+            `CPU Usage: ${systemInfo.cpu.usage}%\n` +
+            `Memory Usage: ${systemInfo.memory.usage}%\n` +
+            `Disk Usage: ${systemInfo.diskSpace.usage}%\n\n` +
+            analysis
+        }
+      ]);
     } catch (error) {
       setMessages(prev => [...prev, {
         type: 'system',
@@ -52,59 +73,59 @@ export default function CommandPrompt() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 p-0">
+    <div className="min-h-screen bg-[#0a0a0a] p-0">
       <div className="command-prompt w-screen">
         {/* Modern Header */}
-        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-5 w-full">
+        <div className="bg-[#1a1a1a] text-white px-8 py-6 w-full shadow-xl">
           <div className="flex items-baseline">
-            <h1 className="text-4xl font-bold tracking-tight">The Quippy</h1>
-            <span className="ml-4 text-blue-100 font-medium"></span>
+            <h1 className="text-4xl font-bold tracking-tight text-[#00ff9d]">The Quippy</h1>
+            <span className="ml-4 text-gray-300 font-medium"></span>
           </div>
         </div>
 
         {/* Messages Area */}
-        <div className="h-[60vh] overflow-auto bg-white">
+        <div className="h-[60vh] overflow-auto bg-[#0a0a0a]">
           {messages.map((message, index) => (
             <div 
               key={index} 
               className={`message ${
                 message.type === 'system' 
-                  ? 'border-l-4 border-blue-500' 
-                  : 'border-l-4 border-green-500'
+                  ? 'border-l-4 border-[#00ff9d]' 
+                  : 'border-l-4 border-[#ff00ff]'
               }`}
             >
               <div className="flex items-start">
                 <span className={`font-mono font-bold ${
                   message.type === 'system' 
-                    ? 'text-blue-500' 
-                    : 'text-green-500'
+                    ? 'text-[#00ff9d]' 
+                    : 'text-[#ff00ff]'
                 }`}>
                   {message.type === 'system' ? '>' : '$'}
                 </span>
-                <span className="ml-4 whitespace-pre-wrap">
+                <pre className="ml-4 font-mono whitespace-pre-line text-white">
                   {message.content}
-                </span>
+                </pre>
               </div>
             </div>
           ))}
         </div>
 
         {/* Input Area */}
-        <div className="input-area w-full">
+        <div className="input-area w-full fixed bottom-0 left-0 right-0 bg-[#1a1a1a] border-t border-[#333333]">
           <form onSubmit={handleSubmit} className="w-full">
             <div className="flex items-center gap-0 w-full">
-              <span className="text-blue-600 font-mono font-bold text-lg px-4">$</span>
+              <span className="text-[#00ff9d] font-mono font-bold text-2xl px-6">$</span>
               <div className="flex-1 flex items-center input-field">
                 <input
                   type="text"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
-                  className="flex-1 px-4 py-5 bg-transparent border-none focus:outline-none text-lg w-full"
+                  className="flex-1 px-6 py-8 bg-transparent border-none focus:outline-none text-2xl w-full min-h-[80px] text-white placeholder-gray-500"
                   placeholder="Type your problem here..."
                 />
                 <button 
                   type="submit" 
-                  className="px-6 py-3 bg-blue-600 text-white hover:bg-blue-700 transition-colors font-medium"
+                  className="px-10 py-6 bg-[#00ff9d] text-black hover:bg-[#00cc7d] transition-colors font-medium text-xl"
                 >
                   Send
                 </button>

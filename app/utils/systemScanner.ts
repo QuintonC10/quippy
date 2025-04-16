@@ -83,10 +83,12 @@ function basicAnalysis(userInput: string, systemInfo: SystemInfo) {
   const input = userInput.toLowerCase();
   
   const systemStatus = [
-    `Current System Status:`,
-    `• CPU Usage: ${systemInfo.cpu.usage}%${systemInfo.cpu.usage > 80 ? ' (HIGH!)' : ''}`,
-    `• Memory Usage: ${systemInfo.memory.usage}%${systemInfo.memory.usage > 90 ? ' (CRITICAL!)' : ''}`,
-    `• Disk Usage: ${systemInfo.diskSpace.usage}%${systemInfo.diskSpace.usage > 90 ? ' (CRITICAL!)' : ''}`
+    `📊 SYSTEM STATUS`,
+    `----------------------------------------`,
+    `CPU Usage:    ${systemInfo.cpu.usage}%${systemInfo.cpu.usage > 80 ? ' ⚠️ HIGH' : ''}`,
+    `Memory Usage: ${systemInfo.memory.usage}%${systemInfo.memory.usage > 90 ? ' ⚠️ CRITICAL' : ''}`,
+    `Disk Usage:   ${systemInfo.diskSpace.usage}%${systemInfo.diskSpace.usage > 90 ? ' ⚠️ CRITICAL' : ''}`,
+    `----------------------------------------`
   ].join('\n');
 
   const problems = {
@@ -114,167 +116,167 @@ function basicAnalysis(userInput: string, systemInfo: SystemInfo) {
 
   // Performance Issues
   if (problems.performance.some(term => input.includes(term))) {
-    const issues = [];
+    const issues: string[] = [];
     if (systemInfo.cpu.usage > 80) {
-      issues.push('• High CPU usage detected');
+      issues.push('⚠️ High CPU usage detected');
     }
     if (systemInfo.memory.usage > 90) {
-      issues.push('• Low memory available');
+      issues.push('⚠️ Low memory available');
     }
     if (systemInfo.cpu.temperature && systemInfo.cpu.temperature > 80) {
-      issues.push('• High temperature detected');
+      issues.push('⚠️ High temperature detected');
     }
     
     return `${systemStatus}
 
-Detected issues:
+🔍 DETECTED ISSUES:
 ${issues.join('\n')}
 
-Solutions (most effective first):
+💡 RECOMMENDED SOLUTIONS:
 
-1. Close any programs you're not using right now
-   - Open Task Manager
-   - Look for programs using lots of resources
-   - Close ones you don't need
+1️⃣ Close Unused Programs
+   • Open Task Manager
+   • Look for programs using lots of resources
+   • Close ones you don't need
 
-2. Restart your computer
-   - Save your work
-   - Click Start menu
-   - Choose Restart
+2️⃣ Restart Your Computer
+   • Save your work
+   • Click Start menu
+   • Choose Restart
 
-3. Run a quick virus scan
-   - Open Windows Security
-   - Choose Quick Scan
-   - Wait for results
+3️⃣ Run Virus Scan
+   • Open Windows Security
+   • Choose Quick Scan
+   • Wait for results
 
-4. Update your drivers
-   - Open Device Manager
-   - Look for yellow warning symbols
-   - Update those devices`;
+4️⃣ Update Drivers
+   • Open Device Manager
+   • Look for yellow warning symbols
+   • Update those devices`;
   }
 
   // Network Issues
   if (problems.network.some(term => input.includes(term))) {
     return `${systemStatus}
 
-Solutions (in order of effectiveness):
+💡 RECOMMENDED SOLUTIONS:
 
-1. Restart your router
-   - Unplug your router
-   - Wait 30 seconds
-   - Plug it back in
+1️⃣ Restart Router
+   • Unplug your router
+   • Wait 30 seconds
+   • Plug it back in
 
-2. Try a wired connection
-   - Connect computer directly to router with cable
-   - Test internet speed
+2️⃣ Try Wired Connection
+   • Connect computer directly to router
+   • Test internet speed
 
-3. Run Network Troubleshooter
-   - Open Settings
-   - Choose Network & Internet
-   - Run troubleshooter
+3️⃣ Run Network Troubleshooter
+   • Open Settings
+   • Choose Network & Internet
+   • Run troubleshooter
 
-4. Check for Windows updates
-   - Open Settings
-   - Choose Windows Update
-   - Check for updates`;
+4️⃣ Check Windows Updates
+   • Open Settings
+   • Choose Windows Update
+   • Check for updates`;
   }
 
   // Blue Screen Issues
   if (problems.blueScreen.some(term => input.includes(term))) {
     return `${systemStatus}
 
-Solutions (most likely to help first):
+💡 RECOMMENDED SOLUTIONS:
 
-1. Restart your computer
-   - Save any open work
-   - Click Start menu
-   - Choose Restart
+1️⃣ Restart Computer
+   • Save any open work
+   • Click Start menu
+   • Choose Restart
 
-2. Update your drivers
-   - Open Device Manager
-   - Look for yellow warning symbols
-   - Right-click and update drivers
+2️⃣ Update Drivers
+   • Open Device Manager
+   • Look for yellow warnings
+   • Update drivers
 
-3. Run Windows Memory Diagnostic
-   - Type 'memory' in Start menu
-   - Choose Windows Memory Diagnostic
-   - Follow the prompts
+3️⃣ Run Memory Diagnostic
+   • Type 'memory' in Start menu
+   • Choose Windows Memory Diagnostic
+   • Follow prompts
 
-4. Check for error codes
-   - Write down any error codes you see
-   - Take a photo of blue screen if possible`;
+4️⃣ Document Error Codes
+   • Write down error codes
+   • Take photo of blue screen`;
   }
 
   // Storage Issues
   if (problems.storage.some(term => input.includes(term))) {
     return `${systemStatus}
 
-Solutions (quickest first):
+💡 RECOMMENDED SOLUTIONS:
 
-1. Empty your Recycle Bin
-   - Right-click Recycle Bin
-   - Choose Empty Recycle Bin
-   - Confirm deletion
+1️⃣ Empty Recycle Bin
+   • Right-click Recycle Bin
+   • Choose Empty Recycle Bin
+   • Confirm deletion
 
-2. Delete unnecessary downloads
-   - Open Downloads folder
-   - Sort by size
-   - Delete large files you don't need
+2️⃣ Delete Downloads
+   • Open Downloads folder
+   • Sort by size
+   • Delete large files
 
-3. Uninstall unused programs
-   - Open Settings
-   - Go to Apps
-   - Remove programs you don't use
+3️⃣ Uninstall Programs
+   • Open Settings
+   • Go to Apps
+   • Remove unused programs
 
-4. Move large files
-   - Find large files using Storage Sense
-   - Copy to external drive
-   - Delete from computer`;
+4️⃣ Move Large Files
+   • Find large files
+   • Copy to external drive
+   • Delete from computer`;
   }
 
   // Audio Issues
   if (problems.audio.some(term => input.includes(term))) {
     return `${systemStatus}
 
-Solutions (easiest first):
+💡 RECOMMENDED SOLUTIONS:
 
-1. Check physical connections
-   - Make sure speakers/headphones are plugged in
-   - Try different USB ports if needed
-   - Check cable connections
+1️⃣ Check Connections
+   • Verify speaker/headphone connections
+   • Try different USB ports
+   • Check cables
 
-2. Check Windows sound settings
-   - Click speaker icon in taskbar
-   - Make sure not muted
-   - Try increasing volume
+2️⃣ Check Sound Settings
+   • Click speaker icon
+   • Ensure not muted
+   • Adjust volume
 
-3. Restart your computer
-   - Save all work
-   - Click Start menu
-   - Choose Restart
+3️⃣ Restart Computer
+   • Save all work
+   • Click Start menu
+   • Choose Restart
 
-4. Update audio drivers
-   - Open Device Manager
-   - Find Sound devices
-   - Update drivers`;
+4️⃣ Update Audio Drivers
+   • Open Device Manager
+   • Find Sound devices
+   • Update drivers`;
   }
 
   // If no specific condition is met
   return `${systemStatus}
 
-To help you better, please tell me:
+❓ To help you better, please provide:
 
-1. What exactly isn't working?
-   - What happens when you try?
-   - Any error messages?
+1️⃣ What exactly isn't working?
+   • What happens when you try?
+   • Any error messages?
 
-2. When did it start?
-   - Was it working before?
-   - What changed?
+2️⃣ When did it start?
+   • Was it working before?
+   • What changed?
 
-3. Recent system changes?
-   - New programs installed?
-   - Recent updates?
+3️⃣ Recent changes?
+   • New programs installed?
+   • Recent updates?
 
-4. What have you tried so far?`;
+4️⃣ What have you tried?`;
 }
