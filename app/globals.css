@@ -3,54 +3,274 @@
 @tailwind utilities;
 
 :root {
-  --primary: #2563eb;
-  --primary-dark: #1d4ed8;
-  --background: #f8fafc;
-  --foreground: #1e293b;
+  --primary: #6366f1;
+  --primary-dark: #4f46e5;
+  --background: #000000;
+  --foreground: #ffffff;
+  --card: rgba(255, 255, 255, 0.1);
+  --border: rgba(255, 255, 255, 0.2);
+  --input: transparent;
+  --success: #10b981;
+  --error: #ef4444;
+  --warning: #f59e0b;
+}
+
+:root[data-theme="light"] {
+  --primary: #3b82f6;
+  --primary-dark: #2563eb;
+  --background: #ffffff;
+  --foreground: #000000;
   --card: #ffffff;
-  --border: #e2e8f0;
-  --input: #f1f5f9;
+  --border: #e1e1e1;
+  --input: #ffffff;
+  --success: #10b981;
+  --error: #ef4444;
+  --warning: #f59e0b;
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
   font-family: 'Segoe UI', system-ui, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  margin: 0;
+  padding: 0;
 }
 
 .command-prompt {
-  box-shadow: none;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
   border-radius: 0;
   overflow: hidden;
   background: var(--card);
   border: 1px solid var(--border);
-  width: 100vw;
-  margin: 0;
-  border-left: 0;
-  border-right: 0;
+  transition: all 0.3s ease;
+}
+
+.command-prompt:hover {
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4);
+  transform: translateY(-2px);
 }
 
 .message {
-  padding: 1rem 1.5rem;
-  transition: background-color 0.2s;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(5px);
+}
+
+.message::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--border), transparent);
 }
 
 .message:hover {
-  background: var(--input);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
 }
 
 .input-area {
-  border-top: 1px solid var(--border);
+  width: 100%;
   padding: 0;
   background: var(--card);
-  width: 100%;
+  position: relative;
+}
+
+.input-area::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--border), transparent);
 }
 
 .input-field {
-  border-radius: 0;
-  box-shadow: none;
-  background: var(--input);
   width: 100%;
   margin: 0;
   padding: 0;
+}
+
+.input-field input {
+  width: 100%;
+  min-height: 100px;
+  padding: 1.5rem;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--card);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
+}
+
+/* Focus styles */
+input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--primary);
+}
+
+button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--primary);
+}
+
+/* Typography */
+pre {
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  line-height: 1.6;
+  letter-spacing: -0.01em;
+}
+
+/* Animations */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-5px); }
+  100% { transform: translateY(0px); }
+}
+
+.message:hover {
+  animation: float 2s ease-in-out infinite;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+@keyframes loading {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+.animate-pulse {
+  animation: pulse 2s infinite;
+}
+
+.loading-spinner {
+  animation: loading 1s linear infinite;
+}
+
+/* Message Styles */
+.message {
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.message-timestamp {
+  font-size: 0.75rem;
+  opacity: 0.7;
+  margin-top: 0.5rem;
+}
+
+.copy-button {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.message:hover .copy-button {
+  opacity: 1;
+}
+
+/* Button Styles */
+.button {
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.button::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.3s ease, height 0.3s ease;
+}
+
+.button:hover::after {
+  width: 200%;
+  height: 200%;
+}
+
+/* Focus Styles */
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Character Counter */
+.character-counter {
+  position: absolute;
+  bottom: 0.5rem;
+  right: 0.5rem;
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+/* Loading Indicator */
+.loading-indicator {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  border-top-color: transparent;
+}
+
+/* Accessibility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
 }

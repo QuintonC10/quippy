@@ -1,55 +1,127 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { scanSystem, analyzeProblem } from '../utils/systemScanner';
+import ChatInput from './ChatInput';
+import { Copy, Trash2, Sun, Moon } from 'lucide-react';
 
 interface Message {
   type: 'user' | 'system';
   content: string;
+  timestamp: Date;
 }
 
 export default function CommandPrompt() {
   const [messages, setMessages] = useState<Message[]>([
     {
       type: 'system',
-      content: 'Hello! What problem are you experiencing with your machine?'
+      content: 'Hello! What problem are you experiencing with your machine?',
+      timestamp: new Date()
     }
   ]);
-  const [input, setInput] = useState('');
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!input.trim()) return;
+  // Handle theme initialization after mount
+  useEffect(() => {
+    setIsMounted(true);
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    setIsDarkMode(prefersDark);
+    document.documentElement.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
 
-    // Add user message
-    setMessages(prev => [...prev, { type: 'user', content: input }]);
+    // Listen for system theme changes
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleChange = (e: MediaQueryListEvent) => {
+      setIsDarkMode(e.matches);
+      document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+    };
+
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, []);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  const toggleTheme = () => {
+    const newTheme = !isDarkMode;
+    setIsDarkMode(newTheme);
+    document.documentElement.setAttribute('data-theme', newTheme ? 'dark' : 'light');
+  };
+
+  const handleNewScan = async () => {
+    setIsLoading(true);
+    setMessages([{
+      type: 'system',
+      content: 'Hello! What problem are you experiencing with your machine?',
+      timestamp: new Date()
+    }]);
     
-    // Check for "thank you" message and respond without scanning
-    if (input.toLowerCase().includes('thank you')) {
+    setMessages(prev => [...prev, {
+      type: 'system',
+      content: 'Scanning your system...',
+      timestamp: new Date()
+    }]);
+
+    try {
+      const systemInfo = await scanSystem();
+      console.log('System Info:', systemInfo);
+
+      setMessages(prev => [
+        ...prev,
+        {
+          type: 'system',
+          content:
+            `OS: ${systemInfo.os}\n` +
+            `CPU Usage: ${systemInfo.cpu.usage}%\n` +
+            `Memory Usage: ${systemInfo.memory.usage}%\n` +
+            `Disk Usage: ${systemInfo.diskSpace.usage}%`,
+          timestamp: new Date()
+        }
+      ]);
+    } catch (error) {
       setMessages(prev => [...prev, {
         type: 'system',
-        content: "You're welcome"
+        content: 'Error scanning system: ' + (error instanceof Error ? error.message : 'Unknown error'),
+        timestamp: new Date()
       }]);
-      setInput('');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSendMessage = async (message: string) => {
+    if (!message.trim()) return;
+
+    setMessages(prev => [...prev, { 
+      type: 'user', 
+      content: message,
+      timestamp: new Date()
+    }]);
+    
+    if (message.toLowerCase().includes('thank you')) {
+      setMessages(prev => [...prev, {
+        type: 'system',
+        content: "You're welcome",
+        timestamp: new Date()
+      }]);
       return;
     }
     
+    setIsLoading(true);
     try {
-      // Show scanning message
       setMessages(prev => [...prev, {
         type: 'system',
-        content: 'Scanning your system...'
+        content: 'Scanning your system...',
+        timestamp: new Date()
       }]);
 
-      // Get real system info
       const systemInfo = await scanSystem();
-      console.log('System Info:', systemInfo); // Debug log
+      const analysis = await analyzeProblem(message, systemInfo);
 
-      // Get the AI-generated solution
-      const analysis = await analyzeProblem(input, systemInfo);
-
-      // Combine system info and solution in one message
       setMessages(prev => [
         ...prev,
         {
@@ -59,80 +131,175 @@ export default function CommandPrompt() {
             `CPU Usage: ${systemInfo.cpu.usage}%\n` +
             `Memory Usage: ${systemInfo.memory.usage}%\n` +
             `Disk Usage: ${systemInfo.diskSpace.usage}%\n\n` +
-            analysis
+            analysis,
+          timestamp: new Date()
         }
       ]);
     } catch (error) {
       setMessages(prev => [...prev, {
         type: 'system',
-        content: 'Error scanning system: ' + (error instanceof Error ? error.message : 'Unknown error')
+        content: 'Error scanning system: ' + (error instanceof Error ? error.message : 'Unknown error'),
+        timestamp: new Date()
       }]);
+    } finally {
+      setIsLoading(false);
     }
-    
-    setInput('');
+  };
+
+  const clearChat = () => {
+    setMessages([{
+      type: 'system',
+      content: 'Hello! What problem are you experiencing with your machine?',
+      timestamp: new Date()
+    }]);
+  };
+
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      // You could add a toast notification here
+    } catch (err) {
+      console.error('Failed to copy text: ', err);
+    }
+  };
+
+  const formatTimestamp = (date: Date) => {
+    return new Intl.DateTimeFormat('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    }).format(date);
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] p-0">
-      <div className="command-prompt w-screen">
-        {/* Modern Header */}
-        <div className="bg-[#1a1a1a] text-white px-8 py-6 w-full shadow-xl">
-          <div className="flex items-baseline">
-            <h1 className="text-4xl font-bold tracking-tight text-[#00ff9d]">The Quippy</h1>
-            <span className="ml-4 text-gray-300 font-medium"></span>
+    <div className="min-h-screen">
+      <div className="command-prompt">
+        {/* Header */}
+        <div className={`${
+          isDarkMode 
+            ? 'bg-gray-800 text-white' 
+            : 'bg-blue-600 text-white'
+        } px-8 py-6`}>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <div className={`w-10 h-10 rounded-full ${
+                isDarkMode ? 'bg-white/20' : 'bg-white/30'
+              } flex items-center justify-center animate-pulse`}>
+                <span className="text-xl font-bold">AI</span>
+              </div>
+              <h1 className={`text-2xl font-bold ${
+                isDarkMode 
+                  ? 'bg-clip-text text-transparent bg-gradient-to-r from-white to-blue-100' 
+                  : 'text-white'
+              }`}>The Quippy</h1>
+            </div>
+            <div className="flex items-center space-x-4">
+              <button 
+                onClick={clearChat}
+                className={`button px-4 py-2 rounded-lg ${
+                  isDarkMode ? 'bg-white/20' : 'bg-white/30'
+                } hover:bg-white/40 transition-colors font-medium`}
+                aria-label="Clear chat"
+              >
+                Clear Chat
+              </button>
+              <button 
+                onClick={handleNewScan}
+                className={`button px-4 py-2 rounded-lg ${
+                  isDarkMode ? 'bg-white/20' : 'bg-white/30'
+                } hover:bg-white/40 transition-colors font-medium`}
+                aria-label="New scan"
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <div className="loading-spinner w-5 h-5" />
+                ) : (
+                  'New Scan'
+                )}
+              </button>
+              {isMounted && (
+                <button 
+                  onClick={toggleTheme}
+                  className={`button px-4 py-2 rounded-lg ${
+                    isDarkMode ? 'bg-white/20' : 'bg-white/30'
+                  } hover:bg-white/40 transition-colors font-medium`}
+                  aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+                >
+                  {isDarkMode ? 'Light Mode' : 'Dark Mode'}
+                </button>
+              )}
+            </div>
           </div>
         </div>
 
         {/* Messages Area */}
-        <div className="h-[60vh] overflow-auto bg-[#0a0a0a]">
-          {messages.map((message, index) => (
-            <div 
-              key={index} 
-              className={`message ${
-                message.type === 'system' 
-                  ? 'border-l-4 border-[#00ff9d]' 
-                  : 'border-l-4 border-[#ff00ff]'
-              }`}
-            >
-              <div className="flex items-start">
-                <span className={`font-mono font-bold ${
-                  message.type === 'system' 
-                    ? 'text-[#00ff9d]' 
-                    : 'text-[#ff00ff]'
+        <div className={`h-[70vh] overflow-auto p-6 ${
+          isDarkMode 
+            ? 'bg-gray-900' 
+            : 'bg-gray-50'
+        } flex flex-col justify-center items-center`}>
+          {messages.length === 1 ? (
+            <div className={`message p-8 rounded-xl transform transition-all duration-300 animate-fade-in ${
+              isDarkMode
+                ? 'bg-gray-800 border-l-4 border-blue-400 shadow-lg'
+                : 'bg-white border-l-4 border-blue-500 shadow-sm'
+            }`}>
+              <div className="flex items-center justify-center">
+                <pre className={`font-mono whitespace-pre-wrap leading-relaxed text-2xl text-center ${
+                  isDarkMode ? 'text-white/90' : 'text-gray-800'
                 }`}>
-                  {message.type === 'system' ? '>' : '$'}
-                </span>
-                <pre className="ml-4 font-mono whitespace-pre-line text-white">
-                  {message.content}
+                  {messages[0].content}
                 </pre>
               </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Input Area */}
-        <div className="input-area w-full fixed bottom-0 left-0 right-0 bg-[#1a1a1a] border-t border-[#333333]">
-          <form onSubmit={handleSubmit} className="w-full">
-            <div className="flex items-center gap-0 w-full">
-              <span className="text-[#00ff9d] font-mono font-bold text-2xl px-6">$</span>
-              <div className="flex-1 flex items-center input-field">
-                <input
-                  type="text"
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  className="flex-1 px-6 py-8 bg-transparent border-none focus:outline-none text-2xl w-full min-h-[80px] text-white placeholder-gray-500"
-                  placeholder="Type your problem here..."
-                />
-                <button 
-                  type="submit" 
-                  className="px-10 py-6 bg-[#00ff9d] text-black hover:bg-[#00cc7d] transition-colors font-medium text-xl"
-                >
-                  Send
-                </button>
+              <div className={`message-timestamp text-center ${
+                isDarkMode ? 'text-white/50' : 'text-gray-500'
+              }`}>
+                {formatTimestamp(messages[0].timestamp)}
               </div>
             </div>
-          </form>
+          ) : (
+            messages.map((message, index) => (
+              <div 
+                key={index} 
+                className={`message mb-4 p-4 rounded-xl transform transition-all duration-300 hover:scale-[1.02] w-full max-w-3xl ${
+                  message.type === 'system' 
+                    ? isDarkMode
+                      ? 'bg-gray-800 border-l-4 border-blue-400 shadow-lg hover:shadow-blue-500/20' 
+                      : 'bg-white border-l-4 border-blue-500 shadow-sm hover:shadow-md'
+                    : isDarkMode
+                      ? 'bg-gray-800 border-l-4 border-purple-400 shadow-lg hover:shadow-purple-500/20'
+                      : 'bg-white border-l-4 border-gray-300 shadow-sm hover:shadow-md'
+                }`}
+              >
+                <button
+                  onClick={() => copyToClipboard(message.content)}
+                  className={`copy-button p-1 rounded-full ${
+                    isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-700'
+                  }`}
+                  aria-label="Copy message"
+                >
+                  <Copy className="w-4 h-4" />
+                </button>
+                <div className="flex items-start">
+                  <pre className={`font-mono whitespace-pre-wrap leading-relaxed text-lg ${
+                    isDarkMode ? 'text-white/90' : 'text-gray-800'
+                  }`}>
+                    {message.content}
+                  </pre>
+                </div>
+                <div className={`message-timestamp ${
+                  isDarkMode ? 'text-white/50' : 'text-gray-500'
+                }`}>
+                  {formatTimestamp(message.timestamp)}
+                </div>
+              </div>
+            ))
+          )}
+          <div ref={messagesEndRef} />
         </div>
+
+        {/* Chat Input */}
+        <ChatInput onSend={handleSendMessage} isDarkMode={isDarkMode} isLoading={isLoading} />
       </div>
     </div>
   );

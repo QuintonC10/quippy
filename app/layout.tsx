@@ -18,7 +18,7 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Segoe+UI:wght@400;500;600&display=swap" rel="stylesheet" />
       </head>
-      <body className="font-['Segoe_UI',sans-serif]" suppressHydrationWarning>
+      <body className="min-h-screen w-full m-0 p-0 overflow-x-hidden">
         {children}
       </body>
     </html>
