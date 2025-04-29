@@ -274,3 +274,194 @@ pre {
   white-space: nowrap;
   border-width: 0;
 }
+
+/* Homepage Styles */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2rem 3rem 1.5rem 3rem;
+  background: transparent;
+}
+.logo {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #6366f1;
+  text-decoration: none;
+}
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+.header-button {
+  background: none;
+  border: none;
+  color: #222;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+.header-button:hover {
+  background: #f3f4f6;
+}
+.theme-toggle {
+  background: #f3f4f6;
+  border-radius: 50%;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.theme-icon {
+  font-size: 1.2rem;
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+.hero {
+  text-align: center;
+  margin-top: 2.5rem;
+  margin-bottom: 2.5rem;
+}
+.hero-tag {
+  display: inline-block;
+  background: #e0e7ff;
+  color: #6366f1;
+  font-weight: 600;
+  border-radius: 1.5rem;
+  padding: 0.25rem 1.25rem;
+  font-size: 1rem;
+  margin-bottom: 1.25rem;
+}
+.hero-title {
+  font-size: 3.5rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  color: #18181b;
+}
+.hero-description {
+  font-size: 1.25rem;
+  color: #52525b;
+  margin-bottom: 2rem;
+}
+.button-group {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+}
+.primary-button {
+  background: #6366f1;
+  color: #fff;
+  font-weight: 600;
+  font-size: 1.1rem;
+  border: none;
+  border-radius: 0.75rem;
+  padding: 0.75rem 2.25rem;
+  box-shadow: 0 2px 8px rgba(99,102,241,0.08);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.primary-button:hover {
+  background: #4f46e5;
+}
+.secondary-button {
+  background: #fff;
+  color: #222;
+  font-weight: 600;
+  font-size: 1.1rem;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 0.75rem;
+  padding: 0.75rem 2.25rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  cursor: pointer;
+  transition: background 0.2s, border 0.2s;
+}
+.secondary-button:hover {
+  background: #f3f4f6;
+  border-color: #6366f1;
+}
+.tabs {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  margin-top: 2rem;
+}
+.tab {
+  flex: 1;
+  text-align: center;
+  background: #f3f4f6;
+  color: #52525b;
+  font-weight: 600;
+  font-size: 1.1rem;
+  padding: 0.75rem 0;
+  border-radius: 0.5rem 0.5rem 0 0;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.tab.active {
+  background: #fff;
+  color: #18181b;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.assistant-card {
+  background: #fff;
+  border-radius: 1.25rem;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+  padding: 2rem 2.5rem;
+  margin-bottom: 2rem;
+  margin-top: 0;
+}
+.assistant-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+.assistant-icon {
+  color: #6366f1;
+}
+.assistant-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #18181b;
+}
+.assistant-description {
+  color: #6366f1;
+  font-size: 1rem;
+  margin-bottom: 1.25rem;
+}
+.chat-message {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  background: #f1f5fd;
+  border-radius: 0.75rem;
+  padding: 1.25rem 1.5rem;
+  margin-top: 0.5rem;
+}
+.message-avatar {
+  background: #e0e7ff;
+  color: #6366f1;
+  border-radius: 50%;
+  width: 2.25rem;
+  height: 2.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  margin-right: 0.5rem;
+}
+.message-content {
+  color: #222;
+  font-size: 1.05rem;
+  line-height: 1.6;
+}

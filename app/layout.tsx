@@ -3,7 +3,8 @@ import { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "The Quippy",
+  title: "The Quippy - AI-Powered Diagnostics",
+  description: "Instantly diagnose and fix computer issues with advanced AI",
 };
 
 export default function RootLayout({
@@ -14,12 +15,13 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <title>The Quippy</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Segoe+UI:wght@400;500;600&display=swap" rel="stylesheet" />
+        <link rel="icon" href="/favicon.ico" />
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
       </head>
-      <body className="min-h-screen w-full m-0 p-0 overflow-x-hidden">
-        {children}
+      <body className="min-h-screen w-full m-0 p-0 overflow-x-hidden flex flex-col">
+        <main className="flex-1">
+          {children}
+        </main>
       </body>
     </html>
   );
