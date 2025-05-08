@@ -26,15 +26,12 @@ export async function scanSystem(): Promise<SystemInfo> {
   return response.json();
 }
 
-const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
-if (!apiKey) {
-  throw new Error('NEXT_PUBLIC_GEMINI_API_KEY is not set in environment variables');
-}
-
-const genAI = new GoogleGenerativeAI(apiKey);
-const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-lite" });
-
-export async function analyzeProblem(userInput: string, systemInfo: SystemInfo) {
+export async function analyzeProblem(userInput: string, systemInfo: SystemInfo, apiKey: string) {
+  if (!apiKey) {
+    throw new Error('Gemini API key is required');
+  }
+  const genAI = new GoogleGenerativeAI(apiKey);
+  const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-lite" });
   try {
     const prompt = `You are a friendly computer helper. Given:
 

@@ -13,6 +13,9 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const inputRef = useRef(null);
+  const [apiKey, setApiKey] = useState('');
+  const [showApiKeyPrompt, setShowApiKeyPrompt] = useState(false);
+  const apiKeyInputRef = useRef(null);
 
   useEffect(() => {
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -28,6 +31,12 @@ export default function Home() {
     return () => mediaQuery.removeEventListener('change', handleChange);
   }, []);
 
+  useEffect(() => {
+    // Try to load API key from localStorage on mount
+    const storedKey = typeof window !== 'undefined' ? localStorage.getItem('GEMINI_API_KEY') : '';
+    if (storedKey) setApiKey(storedKey);
+  }, []);
+
   const toggleTheme = () => {
     const newTheme = !isDarkMode;
     setIsDarkMode(newTheme);
@@ -35,6 +44,11 @@ export default function Home() {
   };
 
   const handleSystemScan = async () => {
+    if (!apiKey) {
+      setShowApiKeyPrompt(true);
+      setTimeout(() => apiKeyInputRef.current?.focus(), 100);
+      return;
+    }
     setIsLoading(true);
     setError('');
     setAiAnalysis('');
@@ -42,7 +56,7 @@ export default function Home() {
     try {
       const systemInfo = await scanSystem();
       setScanResult(systemInfo);
-      const analysis = await analyzeProblem(userProblem, systemInfo);
+      const analysis = await analyzeProblem(userProblem, systemInfo, apiKey);
       setAiAnalysis(analysis);
     } catch (err) {
       setError('Failed to scan system or analyze problem.');
@@ -65,6 +79,14 @@ export default function Home() {
     setAiAnalysis('');
     setError('');
     if (inputRef.current) inputRef.current.focus();
+  };
+
+  const handleApiKeySubmit = (e) => {
+    e.preventDefault();
+    if (apiKey.trim()) {
+      localStorage.setItem('GEMINI_API_KEY', apiKey.trim());
+      setShowApiKeyPrompt(false);
+    }
   };
 
   if (!showMain) {
@@ -111,6 +133,25 @@ export default function Home() {
             Start Your Journey
           </button>
         </div>
+        {showApiKeyPrompt && (
+          <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.3)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <form onSubmit={handleApiKeySubmit} style={{ background: '#fff', padding: 32, borderRadius: 16, boxShadow: '0 4px 32px rgba(0,0,0,0.15)', minWidth: 320 }}>
+              <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 16, color: '#2563eb' }}>Enter Gemini API Key</h2>
+              <input
+                ref={apiKeyInputRef}
+                type="password"
+                value={apiKey}
+                onChange={e => setApiKey(e.target.value)}
+                placeholder="Paste your Gemini API key here..."
+                style={{ width: '100%', padding: '0.75rem 1rem', borderRadius: 8, border: '1px solid #e5e7eb', marginBottom: 16, fontSize: 16 }}
+                required
+              />
+              <button type="submit" style={{ background: '#2563eb', color: '#fff', fontWeight: 600, fontSize: 16, border: 'none', borderRadius: 8, padding: '0.7rem 2rem', cursor: 'pointer' }}>
+                Save Key
+              </button>
+            </form>
+          </div>
+        )}
       </div>
     );
   }
@@ -193,6 +234,25 @@ export default function Home() {
             </div>
           )}
         </div>
+        {showApiKeyPrompt && (
+          <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.3)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <form onSubmit={handleApiKeySubmit} style={{ background: '#fff', padding: 32, borderRadius: 16, boxShadow: '0 4px 32px rgba(0,0,0,0.15)', minWidth: 320 }}>
+              <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 16, color: '#2563eb' }}>Enter Gemini API Key</h2>
+              <input
+                ref={apiKeyInputRef}
+                type="password"
+                value={apiKey}
+                onChange={e => setApiKey(e.target.value)}
+                placeholder="Paste your Gemini API key here..."
+                style={{ width: '100%', padding: '0.75rem 1rem', borderRadius: 8, border: '1px solid #e5e7eb', marginBottom: 16, fontSize: 16 }}
+                required
+              />
+              <button type="submit" style={{ background: '#2563eb', color: '#fff', fontWeight: 600, fontSize: 16, border: 'none', borderRadius: 8, padding: '0.7rem 2rem', cursor: 'pointer' }}>
+                Save Key
+              </button>
+            </form>
+          </div>
+        )}
       </main>
     </div>
   );
